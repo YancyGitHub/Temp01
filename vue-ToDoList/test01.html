@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <script src="libs/vue/vue.min.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            var vm = new Vue({
+                el:'#box',
+                methods:{
+                    show:function(ev){
+                        if(ev.keyCode == 13){
+                            alert('你按回车键了');
+                        }
+                    },
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="box">
+        <input type="text" placeholder="请输入" @keyup="show($event)"> 
+
+        <input type="text" placeholder="请输入" @keyup.enter="show($event)">
+    </div>
+</body>
+</html>

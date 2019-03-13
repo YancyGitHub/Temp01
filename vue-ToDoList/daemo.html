@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>留言板</title>
+    <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css">
+    <script src="libs/jquery-1.9.0.min.js"></script>
+    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="libs/vue/vue.min.js"></script>
+    <script>
+        window.onload = function () {
+            new Vue({
+                el: "#app",
+                data: {
+                    myData: [{
+                        name: 'Jack',
+                        age: 20,
+
+                    }],
+                    name: '',
+                    age: '',
+                    nowIndex: -1
+                },
+                methods: {
+                    add: function () {
+                        this.myData.push({
+                            name: this.name,
+                            age: this.age
+                        })
+                        this.name = '';
+                        this.age = '';
+                    },
+                    reset: function () {
+                        this.name = '';
+                        this.age = '';
+                    },
+                    deleteItem: function (i) {
+
+                        if(i==-1){
+                            this.myData=[];
+                        }
+                        else{
+                            this.myData.splice(i,1);
+                        }
+
+                        
+                    }
+                }
+            })
+
+        }
+    </script>
+</head>
+<body>
+<div class="container" id="app">
+    <form role="form">
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" class="form-control" placeholder="Please Input Your Name" v-model="name">
+        </div>
+    </form>
+
+    <form role="form">
+        <div class="form-group">
+            <label for="age">年龄</label>
+            <input type="text" id="age" class="form-control" placeholder="Please Input Your Age" v-model="age">
+        </div>
+    </form>
+
+    <div class="form-group">
+        <input type="button" value="Add" class="btn btn-primary btn-sm" @click="add">
+        <input type="button" value="Reset" class="btn btn-danger btn-sm" @click="reset">
+
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <caption class="h3 text-info">用户信息表</caption>
+        <tr>
+            <th>序号</th>
+            <th>名字</th>
+            <th>年龄</th>
+            <th>操作</th>
+        </tr>
+        <tr v-for="(item, index) in myData" >
+            <td>{{index+1}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.age}}</td>
+            <td>
+                <button @click="nowIndex=index" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#layer">Delete</button>
+            </td>
+        </tr>
+
+        <tr v-show="myData.length != 0" data-toggle="modal" data-target="#layer">
+            <td colspan="4" class="text-right">
+                <button @click="nowIndex = -1" class="btn btn-danger btn-sm">Delete All</button>
+            </td>
+        </tr>
+        <tr class="text-center text-muted" v-show="myData.length == 0">
+            <td colspan="4">
+                <p>暂无数据...</p>
+            </td>
+        </tr>
+
+    </table>
+
+    <!--模态框 弹出框-->
+    <div role="dialog" id="layer" class="modal fade" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">
+                        <span>×</span>
+                    </button>
+                    <h4 class="modal-title">确认删除？</h4>
+                </div>
+                <div class="modal-body text-right">
+                    <button @click="deleteItem(nowIndex)" class="btn btn-danger btn-sm" data-dismiss="modal">确认</button>
+                    <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

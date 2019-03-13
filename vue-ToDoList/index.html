@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>vue ToDoList</title>
+		<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css"/>
+		<script src="libs/jquery.min-2.1.1.js"></script>
+		<script src="libs/vue/vue.min.js"></script>
+		<script src="libs/bootstrap/js/bootstrap.min.js"></script>
+		<script>
+			function isNull( str ){
+				if ( str.length == 0 || str == null || str == undefined ) return true;
+				var regu = "^[ ]+$";
+				var re = new RegExp(regu);
+				return re.test(str);
+			}
+			window.onload = function () {
+				new Vue({
+					el: "#app",
+					data: {
+						toDoList: [
+							{item: "To Do Item 01"},
+							{item: "To Do Item 02"},
+							{item: "To Do Item 03"},
+							{item: "To Do Item 04"},
+							{item: "To Do Item 05"},
+							{item: "To Do Item 06"},
+							{item: "To Do Item 07"},
+							{item: "To Do Item 08"},
+							{item: "To Do Item 09"},
+							{item: "To Do Item 10"},
+						],
+						doneList: [
+							{item: "Done List Item 01"},
+							{item: "Done List Item 02"},
+							{item: "Done List Item 03"},
+							{item: "Done List Item 04"},
+							{item: "Done List Item 05"},
+							{item: "Done List Item 06"},
+							{item: "Done List Item 07"},
+							{item: "Done List Item 08"},
+							{item: "Done List Item 09"},
+							{item: "Done List Item 10"},
+							{item: "Done List Item 11"},
+							{item: "Done List Item 12"},
+						],
+						dialogInfo: {
+							title: "Delete?",
+							msg: "Are you sure delete this item?"
+						},
+						toDoItemIndex: -1,
+						doneItemIndex: -1,
+						addItemText: "",
+					},
+					methods: {
+						delToDoItem: function(index) {
+							this.toDoList.splice(index,1);
+						},
+						delDoneItem: function(index) {
+							this.doneList.splice(index,1);
+						},
+						setDone: function(index) {
+							if(index >= 0) {
+								this.doneList.unshift({
+									item: this.toDoList[index].item,
+								});
+								this.delToDoItem(index);
+							}
+						},
+						setTodo: function(index) {
+							if(index >= 0) {
+								this.toDoList.unshift({
+									item: this.doneList[index].item,
+								});
+								this.delDoneItem(index);
+							}
+						},
+						addToDoItem: function(ev){
+							if(!isNull(this.addItemText)) {
+								this.toDoList.unshift({
+										item: this.addItemText,
+									});
+							}
+							this.addItemText = "";
+						},
+						clearToDoList: function() {
+							this.toDoList = [];
+						},
+						clearDoneList: function() {
+							this.doneList = [];
+						},
+					},
+				})
+			}
+		</script>
+	</head>
+	<body>
+		<table class="table">
+		</table>
+		<div class="container" id="app">
+			<div class="col-md-6 col-md-offset-3">
+				<input type="text" class="form-control" placeholder="Input To Do Item" @keyup.enter="addToDoItem()" v-model="addItemText"/>
+			</div>
+
+			<div class="col-md-6">
+				<table class="table table-bordered table-hover">
+					<caption class="h3 text-primary text-center">To Do List</caption>
+					<tr v-for="(entry, index) in toDoList">
+						<td class="col-md-1 text-center text-primary glyphicon glyphicon-unchecked" @click="setDone(index)"></td>
+						<td class="col-md-10">{{entry.item}}</td>
+						<td class="col-md-1 text-center text-danger glyphicon glyphicon-trash" @click="delToDoItem(index)"></td>
+					</tr>
+					<tr class="text-center text-muted" v-show="toDoList.length == 0">
+						<td colspan="3">
+							<p>Nothing</p>
+						</td>
+					</tr>
+					<tr v-show="toDoList.length != 0">
+						<td colspan="3" class="text-center">
+							<button class="btn btn-danger btn-sm" @click="clearToDoList()">CLEAR ALL</button>
+						</td>
+					</tr>
+				</table>
+			</div> <!-- endof <div class="col-md-6"> -->
+
+			<div class="col-md-6">
+				<table class="table table-bordered table-hover">
+					<caption class="h3 text-success text-center">Done List</caption>
+					<tr v-for="(entry, index) in doneList">
+						<td class="col-md-1 text-center text-success glyphicon glyphicon-check" @click="setTodo(index)"></td>
+						<td class="col-md-10"><del class="text-warning">&nbsp;&nbsp;{{entry.item}}&nbsp;&nbsp;</del></td>
+						<td class="col-md-1 text-center text-danger glyphicon glyphicon-trash" @click="delDoneItem(index)"></td>
+					</tr>
+					<tr class="text-center text-muted" v-show="doneList.length == 0">
+						<td colspan="3">
+							<p>Nothing</p>
+						</td>
+					</tr>
+					<tr v-show="doneList.length != 0" data-toggle="modal" data-target="#tdl-dialog">
+						<td colspan="3" class="text-center">
+							<button class="btn btn-danger btn-sm">CLEAR ALL</button>
+						</td>
+					</tr>
+				</table>
+			</div> <!-- endof <div class="col-md-6"> -->
+
+			<!-- Dialog -->
+			<div role="dialog" id="tdl-dialog" class="modal fade">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button class="close" data-dismiss="modal">
+								&times;
+							</button>
+							<h4>{{dialogInfo.title}}</h4>
+						</div> <!-- modal-header -->
+						<div class="modal-body">
+							<p>{{dialogInfo.msg}}</p>
+						</div> <!-- modal-body -->
+						<div class="modal-footer">
+							<button class="btn btn-primary btn-sm" data-dismiss="modal">CANCEL</button>
+							<button class="btn btn-danger btn-sm" data-dismiss="modal">CONFIRM</button>
+						</div> <!-- modal-footer -->
+					</div>
+				</div> <!-- modal-dialog -->
+			</div> <!-- role="dialog" id="tdl-dialog" -->
+
+		</div> <!-- endof <div class="container" id="app"> -->
+	</body>
+</html>
